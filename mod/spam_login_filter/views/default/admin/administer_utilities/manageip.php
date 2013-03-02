@@ -9,17 +9,11 @@
 		'offset' => $offset,
 		'count' => TRUE,
 	);
-
-	//elgg_set_ignore_access(true);
 		
 	$spam_login_filter_ip_list = elgg_get_entities($options);
 
-	//elgg_set_ignore_access(false);
-
 	if (!$count = elgg_get_entities($options)) {
-		echo elgg_view('page/elements/wrapper', array(
-			'body' => elgg_echo('spam_login_filter:admin:no_ips')
-		));
+		echo elgg_echo('spam_login_filter:admin:no_ips');
 		return;
 	}
 
@@ -46,7 +40,7 @@
 	
 	$form_body .= "</table>";
 
-	$form_body = elgg_view("page/elements/wrapper", array('body' => $form_body));
+	//$form_body = elgg_view("page/elements/wrapper", array('body' => $form_body));
 
 	echo elgg_view('input/form', array(
 		'body' => $form_body,

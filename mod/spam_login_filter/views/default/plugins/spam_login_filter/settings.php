@@ -10,7 +10,7 @@
     </select><br><br>
 <?php
 	echo elgg_echo('spam_login_filter:stopforumspam_api_key');
-    echo elgg_view('input/text', array('internalname' => "params[stopforumspam_api_key]", 'value' => $vars['entity']->stopforumspam_api_key));
+    echo elgg_view('input/text', array('name' => "params[stopforumspam_api_key]", 'value' => $vars['entity']->stopforumspam_api_key));
 	
 	echo "<br><br>";
 ?>
@@ -27,7 +27,7 @@
 
 <?php
 	echo elgg_echo('spam_login_filter:fassim_api_key');
-    echo elgg_view('input/text', array('internalname' => "params[fassim_api_key]", 'value' => $vars['entity']->fassim_api_key));
+    echo elgg_view('input/text', array('name' => "params[fassim_api_key]", 'value' => $vars['entity']->fassim_api_key));
 	
 	echo "<br><br>";
 ?>
@@ -80,14 +80,14 @@
 <?php
 	//Block countries?
 	echo elgg_echo('spam_login_filter:fassim_blocked_country_list');
-	echo elgg_view('input/text', array('internalname' => "params[fassim_blocked_country_list]", 'value' => $vars['entity']->fassim_blocked_country_list));
+	echo elgg_view('input/text', array('name' => "params[fassim_blocked_country_list]", 'value' => $vars['entity']->fassim_blocked_country_list));
 
 	echo "<br><br>";
 ?>
 <?php
 	//Block regions?
 	echo elgg_echo('spam_login_filter:fassim_blocked_region_list');
-	echo elgg_view('input/text', array('internalname' => "params[fassim_blocked_region_list]", 'value' => $vars['entity']->fassim_blocked_region_list));
+	echo elgg_view('input/text', array('name' => "params[fassim_blocked_region_list]", 'value' => $vars['entity']->fassim_blocked_region_list));
 
 	echo "<br><br>";
 ?>
@@ -103,7 +103,7 @@
     </select><br>
 <?php
 	echo elgg_echo('spam_login_filter:blacklisted_mail_domains');
-	echo elgg_view('input/longtext', array('internalname' => "params[blacklisted_mail_domains]", 'value' => $vars['entity']->blacklisted_mail_domains));
+	echo elgg_view('input/longtext', array('name' => "params[blacklisted_mail_domains]", 'value' => $vars['entity']->blacklisted_mail_domains));
 
 	echo "<br><br>";
 ?>
@@ -119,7 +119,7 @@
     </select><br>
 <?php
 	echo elgg_echo('spam_login_filter:blacklisted_mails');
-	echo elgg_view('input/longtext', array('internalname' => "params[blacklisted_mails]", 'value' => $vars['entity']->blacklisted_mails));
+	echo elgg_view('input/longtext', array('name' => "params[blacklisted_mails]", 'value' => $vars['entity']->blacklisted_mails));
 
 	echo "<br><br>";
 ?>
@@ -136,7 +136,7 @@
 
 <?php
 	echo elgg_echo('spam_login_filter:notify_mail_address');
-    echo elgg_view('input/text', array('internalname' => "params[notify_mail_address]", 'value' => $vars['entity']->notify_mail_address));
+    echo elgg_view('input/text', array('name' => "params[notify_mail_address]", 'value' => $vars['entity']->notify_mail_address));
 	
 	echo "<br><br>";
 ?>

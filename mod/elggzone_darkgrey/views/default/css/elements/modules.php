@@ -145,7 +145,7 @@
 	padding: 4px 45px 0 20px;
 	color: #FFF;
 }
-.elgg-module-widget.elgg-state-draggable > .elgg-head {
+.elgg-module-widget.elgg-state-draggable .elgg-widget-handle {
 	cursor: move;
 }
 a.elgg-widget-collapse-button {

@@ -25,6 +25,9 @@ The Wire
 	margin:0;
 	text-align: right;
 }
+.thewire-characters-remaining-warning {
+	color: #FF6666 !important;
+}
 .thewire-parent {
 	margin-left: 40px;
 }

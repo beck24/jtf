@@ -18,7 +18,6 @@
 <?php // the width is on the page rather than topbar to handle small viewports ?>
 .elgg-page-default {
 	min-width: 998px;
-
 }
 .elgg-page-default .elgg-page-header > .elgg-inner {
 	width: 990px;
@@ -56,7 +55,7 @@
 	top: 24px;
 	right: 20px;
 	max-width: 500px;
-	z-index: 2000;
+	z-index: 9001;
 }
 .elgg-system-messages li {
 	margin-top: 10px;

@@ -1,6 +1,17 @@
 <?php
-
-register_elgg_event_handler('init','system','elggzone_darkgrey_init');
+/*
+ *
+ * Elggzone Darkgrey
+ *
+ * @author Elggzone
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GNU General Public License v2
+ * @copyright Copyright (c) 2013, Elggzone
+ *
+ * @link http://www.perjensen-online.dk/
+ *
+ */
+ 
+elgg_register_event_handler('init','system','elggzone_darkgrey_init');
  
 function elggzone_darkgrey_init() {
 
@@ -36,9 +47,10 @@ function elggzone_darkgrey_theme_groups_icon_url_handler($hook, $entity_type, $r
 	$group = $params['entity'];
 	$size = $params['size'];
 
-	if (isset($group->icontime)) {
+	$icontime = $group->icontime;
+		
+	if ($icontime) {
 		// return thumbnail
-		$icontime = $group->icontime;
 		return "groupicon/$group->guid/$size/$icontime.jpg";
 	}
 	return "mod/elggzone_darkgrey/graphics/groups/default{$size}.gif";
@@ -53,16 +65,17 @@ function elggzone_darkgrey_pagesetup_handler() {
 		elgg_extend_view('page/elements/header', 'search/header');
 	}
 	
-	// Extend footer with copyright	
+	// Extend footer with copyright
+	$year = date('Y');	
 	$href = "http://www.perjensen-online.dk";
 	elgg_register_menu_item('footer', array(
 		'name' => 'copyright_this',
 		'href' => $href,
 		'title' => elgg_echo('elggzone_darkgrey:tooltip'),
-		'text' => elgg_echo('elggzone_darkgrey:copyright'),
-		'priority' => 500,
+		'text' => elgg_echo('elggzone_darkgrey:copyright') . $year . elgg_echo(' Elggzone'),
+		'priority' => 1,
 		'section' => 'alt',
-	));
+	));	
 		
 	if (!elgg_is_logged_in()) {	
 		elgg_register_menu_item('topbar', array(

@@ -19,14 +19,21 @@
 	margin: 0 2px;
 }
 .elgg-icon-arrow-left {
-	background-position: 0 -0px;
+	width: 20px;
+	height: 22px;
+    margin:0 4px;
+	background: transparent url(<?php echo elgg_get_site_url();?>mod/elggzone_darkgrey/graphics/arrow_left.png) no-repeat;
+	background-position: 0 0;
 }
 .elgg-icon-arrow-right {
 	width: 20px;
 	height: 22px;
     margin:0 4px;
-	background: transparent url(<?php echo elgg_get_site_url();?>mod/elggzone_darkgrey/graphics/follow_icon.png) no-repeat;
-	background-position: 0 2px;
+	background: transparent url(<?php echo elgg_get_site_url();?>mod/elggzone_darkgrey/graphics/arrow_right.png) no-repeat;
+	background-position: 0 0;
+}
+.elgg-river-attachments .elgg-icon-arrow-right {
+	background-position: 2px 2px;
 }
 .elgg-icon-arrow-two-head {
 	background-position: 0 -36px;
@@ -298,8 +305,8 @@
 }
 .elgg-ajax-loader {
 	background: white url(<?php echo elgg_get_site_url(); ?>_graphics/ajax_loader_bw.gif) no-repeat center center;
-	min-height: 33px;
-	min-width: 33px;
+	min-height: 31px;
+	min-width: 31px;
 }
 
 /* ***************************************

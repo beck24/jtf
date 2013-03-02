@@ -1,8 +1,8 @@
 <?php
 
-	/**
-	 * elggzone_darkgrey css
-	 */
+/**
+ * elggzone_darkgrey css
+ */
 
 ?>
 

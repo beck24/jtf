@@ -16,7 +16,7 @@
 	font: 12px/100% Arial, Helvetica, sans-serif;
 	font-weight: bold;
 	color: #FFF;
-	background:#79828F;
+	background: #79828F;
     border:none;
 	width: auto;
 	padding: 4px 6px;

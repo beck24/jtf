@@ -34,6 +34,10 @@ input, textarea {
 	background-color:#939BA5;
 	border:1px solid #59626D;
 	color:#59626D;
+    
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 input[type=text]:focus, textarea:focus {

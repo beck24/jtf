@@ -9,6 +9,10 @@
 .groups-profile > .elgg-image {
 	margin-right: 10px;
 }
+.groups-profile-icon img {
+    width: 100%;
+    height: auto;
+}
 .groups-stats {
 	padding: 5px 0;
 	margin-top: 10px;
@@ -39,4 +43,11 @@
 .groups-latest-reply {
 	float: right;
 }
-
+.elgg-menu-groups-my-status li a {
+	display: block;
+	margin: 3px 0 5px 0;
+	padding: 2px 4px 2px 0;
+}
+.elgg-menu-groups-my-status li a:hover {
+	text-decoration: none;
+}

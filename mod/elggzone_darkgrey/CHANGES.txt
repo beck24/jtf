@@ -1,0 +1,58 @@
+= Version history =
+
+2013.01.16:
+
+- Updated to Elgg 1.8.12
+
+2012.12.20:
+
+- Changed: Copyright notice
+
+2012.11.14:
+
+- Updated to Elgg 1.8.9
+- Added: Code link in manifest
+
+2012.08.03:
+
+- Added: id element to manifest
+- Updated: groups_icon_url_handler
+
+2012.07.15:
+
+- Updated to Elgg 1.8.8
+- Added: arrow_left.png
+- Remamed: follow_icon.png to arrow_right.png
+- Added: tidypics support - photos/css.php
+
+2012.06.22:
+
+- Updated to Elgg 1.8.6
+
+2012.06.15:
+
+- Updated to Elgg 1.8.5
+- Added: changelog, elggzone_darkgrey/CHANGES.txt
+- Added: file/css.php
+
+2012.04.30:
+
+- Updated to Elgg 1.8.4
+- Added: messages/css.php
+- Added: css/walled_garden.php
+
+2012.01.12:
+
+- Updated to Elgg 1.8.3
+- Added: groups/sidebar/search.php
+- Updated: manifest.xml
+- Updated: views/default/css/elements/modules.php
+- Updated: views/default/groups/sidebar/find.php
+
+2011.12.23:
+
+- Updated to Elgg 1.8.2
+- Updated: views/default/page/default.php
+- Updated: views/default/css/elements/ - typography.php, navigation.php, modules.php, layout.php, forms.php, components.php.
+
+ 

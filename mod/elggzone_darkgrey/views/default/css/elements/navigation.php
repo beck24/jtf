@@ -414,7 +414,7 @@
 .elgg-menu-general > li,
 .elgg-menu-general > li > a {
 	display: inline-block;
-	color: #999;
+
 }
 
 .elgg-menu-general > li:after {
@@ -430,7 +430,7 @@
 	float: right;
 	margin-left: 15px;
 	font-size: 90%;
-	color: #59626D;
+	color: #697481;
 	line-height: 16px;
 	height: 16px;
 }
@@ -438,7 +438,7 @@
 	margin-left: 15px;
 }
 .elgg-menu-entity > li > a, .elgg-menu-annotation > li > a {
-	color: #59626D;
+	color: #697481;
 }
 .elgg-menu-entity > li > a:hover, .elgg-menu-annotation > li > a:hover {
 	color:#788A9A;
@@ -480,7 +480,7 @@
 	float: right;
 	margin-left: 15px;
 	font-size: 90%;
-	color: #59626D;
+	color: #697481;
 	line-height: 16px;
 	height: 16px;
 }
@@ -489,7 +489,7 @@
 	margin-left: 5px;
 }
 .elgg-menu-river > li > a {
-	color: #59626D;
+	color: #697481;
 	height: 16px;
 }
 .elgg-menu-river > li > a:hover {

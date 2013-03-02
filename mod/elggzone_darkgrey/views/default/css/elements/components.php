@@ -28,7 +28,6 @@
 	List
 *************************************** */
 .elgg-list {
-
 	margin: 5px 0;
 	clear: both;
 }
@@ -268,10 +267,10 @@
 	display: inline;
 	margin-right: 5px;
 }
-.elgg-tags li:after {
+.elgg-tags li.elgg-tag:after {
 	content: ",";
 }
-.elgg-tags li:last-child:after {
+.elgg-tags li.elgg-tag:last-child:after {
 	content: "";
 }
 .elgg-tagcloud {

@@ -34,4 +34,4 @@ function jtf_tweaks_pagesetup_handler(){
   elgg_unregister_menu_item('footer', 'copyright_this');
 }
 
-register_elgg_event_handler('init', 'system', 'jtf_tweaks_init');
+elgg_register_event_handler('init', 'system', 'jtf_tweaks_init');

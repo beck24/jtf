@@ -3,10 +3,6 @@
 include 'lib/functions.php';
 
 function weight_tracker_init(){
-	global $CONFIG;
-	
-	// Load the language file
-	register_translations($CONFIG->pluginspath . "weight_tracker/languages/");
 	
 	// set up css
 	elgg_extend_view('css', 'weight_tracker/css');
@@ -110,4 +106,4 @@ function exercise_tracker_page_handler($page){
   return FALSE;
 }
 
-register_elgg_event_handler('init', 'system', 'weight_tracker_init');
+elgg_register_event_handler('init', 'system', 'weight_tracker_init');

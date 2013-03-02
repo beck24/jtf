@@ -18,6 +18,5 @@
 	elgg_extend_view('page/layouts/content/header','advanced_google_tools/Banner728x90');
     }
  
-    register_elgg_event_handler('init','system','advanced_google_tools_init');
+    elgg_register_event_handler('init','system','advanced_google_tools_init');
  
-?>

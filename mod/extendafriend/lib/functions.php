@@ -17,7 +17,7 @@ function extendafriend_add_friend($friend){
 	}
 	if (!$errors){
 		// 	add to river
-		add_to_river('friends/river/create','friend',elgg_get_logged_in_user_guid(),$friend->guid);
+		add_to_river('river/relationship/friend/create','friend',elgg_get_logged_in_user_guid(),$friend->guid);
 		system_message(sprintf(elgg_echo("friends:add:successful"),$friend->name));
 
 
@@ -275,6 +275,25 @@ function extendafriend_revoke_decline($hook, $entity_type, $returnvalue, $params
   }
 }
 
+
+/*
+ *  subscribes or unsubscribes 
+ */
+function extendafriend_notifications_update($user, $friend, $subscriptions){
+  global $NOTIFICATION_HANDLERS;
+  foreach($NOTIFICATION_HANDLERS as $method => $foo) {
+      
+    // add in chosen notifications methods
+    if($subscriptions[$method] == $friend->guid){
+      add_entity_relationship($user->guid, 'notify' . $method, $friend->guid);
+    }
+    else{
+      // remove pre-existing methods
+      remove_entity_relationship($user->guid, 'notify' . $method, $friend->guid);
+    }
+    
+  }
+}
 
 
 function extendafriend_permissions_check(){

@@ -78,7 +78,11 @@
  *                          link_class  => STR  A class or classes for the <a> tag
  *                          item_class  => STR  A class or classes for the <li> tag
  *
- *                          Custom options can be added as key value pairs.
+ *                          Additional options that the view output/url takes can be
+ *							passed in the array. If the 'confirm' key is passed, the
+ *							menu link uses the 'output/confirmlink' view. Custom
+ *							options can be added by using the 'data' key with the
+ *							value being an associative array.
  *
  * @return bool
  * @since 1.8.0
@@ -226,7 +230,7 @@ function elgg_pop_breadcrumb() {
 	global $CONFIG;
 
 	if (is_array($CONFIG->breadcrumbs)) {
-		array_pop($CONFIG->breadcrumbs);
+		return array_pop($CONFIG->breadcrumbs);
 	}
 
 	return FALSE;
@@ -301,7 +305,33 @@ function elgg_site_menu_setup($hook, $type, $return, $params) {
 		// if only one item on more menu, stick it with the rest
 		$num_menu_items = count($return['default']);
 		if ($num_menu_items > ($max_display_items + 1)) {
-			$return['more'] =  array_splice($return['default'], $max_display_items);
+			$return['more'] = array_splice($return['default'], $max_display_items);
+		}
+	}
+	
+	// check if we have anything selected
+	$selected = false;
+	foreach ($return as $section_name => $section) {
+		foreach ($section as $key => $item) {
+			if ($item->getSelected()) {
+				$selected = true;
+				break 2;
+			}
+		}
+	}
+	
+	if (!$selected) {
+		// nothing selected, match name to context
+		foreach ($return as $section_name => $section) {
+			foreach ($section as $key => $item) {
+				// only highlight internal links
+				if (strpos($item->getHref(), elgg_get_site_url()) === 0) {
+					if ($item->getName() == elgg_get_context()) {
+						$return[$section_name][$key]->setSelected(true);
+						break 2;
+					}
+				}
+			}
 		}
 	}
 
@@ -330,6 +360,18 @@ function elgg_river_menu_setup($hook, $type, $return, $params) {
 				);
 				$return[] = ElggMenuItem::factory($options);
 			}
+		}
+		
+		if (elgg_is_admin_logged_in()) {
+			$options = array(
+				'name' => 'delete',
+				'href' => elgg_add_action_tokens_to_url("action/river/delete?id=$item->id"),
+				'text' => elgg_view_icon('delete'),
+				'title' => elgg_echo('delete'),
+				'confirm' => elgg_echo('deleteconfirm'),
+				'priority' => 200,
+			);
+			$return[] = ElggMenuItem::factory($options);
 		}
 	}
 

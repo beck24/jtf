@@ -4,6 +4,7 @@
  */
 elgg.provide('elgg.config.translations');
 
+// default language - required by unit tests
 elgg.config.language = 'en';
 
 /**

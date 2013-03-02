@@ -44,12 +44,18 @@ $posted = 0, $annotation_id = 0) {
 	if ($access_id === "") {
 		$access_id = $object->access_id;
 	}
-	$annotation_id = (int)$annotation_id;
 	$type = $object->getType();
 	$subtype = $object->getSubtype();
-	$action_type = sanitise_string($action_type);
 
-	$params = array(
+	$view = sanitise_string($view);
+	$action_type = sanitise_string($action_type);
+	$subject_guid = sanitise_int($subject_guid);
+	$object_guid = sanitise_int($object_guid);
+	$access_id = sanitise_int($access_id);
+	$posted = sanitise_int($posted);
+	$annotation_id = sanitise_int($annotation_id);
+
+	$values = array(
 		'type' => $type,
 		'subtype' => $subtype,
 		'action_type' => $action_type,
@@ -62,13 +68,13 @@ $posted = 0, $annotation_id = 0) {
 	);
 
 	// return false to stop insert
-	$params = elgg_trigger_plugin_hook('creating', 'river', null, $params);
-	if ($params == false) {
+	$values = elgg_trigger_plugin_hook('creating', 'river', null, $values);
+	if ($values == false) {
 		// inserting did not fail - it was just prevented
 		return true;
 	}
 
-	extract($params);
+	extract($values);
 
 	// Attempt to save river item; return success status
 	$id = insert_data("insert into {$CONFIG->dbprefix}river " .
@@ -102,7 +108,7 @@ $posted = 0, $annotation_id = 0) {
  *
  * @warning not checking access (should we?)
  *
- * @param array $options
+ * @param array $options Parameters:
  *   ids                  => INT|ARR River item id(s)
  *   subject_guids        => INT|ARR Subject guid(s)
  *   object_guids         => INT|ARR Object guid(s)
@@ -209,7 +215,7 @@ function elgg_delete_river(array $options = array()) {
  *
  * @note If using types and subtypes in a query, they are joined with an AND.
  *
- * @param array $options
+ * @param array $options Parameters:
  *   ids                  => INT|ARR River item id(s)
  *   subject_guids        => INT|ARR Subject guid(s)
  *   object_guids         => INT|ARR Object guid(s)
@@ -355,6 +361,7 @@ function elgg_get_river(array $options = array()) {
 		}
 
 		$river_items = get_data($query, 'elgg_row_to_elgg_river_item');
+		_elgg_prefetch_river_entities($river_items);
 
 		return $river_items;
 	} else {
@@ -364,11 +371,56 @@ function elgg_get_river(array $options = array()) {
 }
 
 /**
+ * Prefetch entities that will be displayed in the river.
+ *
+ * @param ElggRiverItem[] $river_items
+ * @access private
+ */
+function _elgg_prefetch_river_entities(array $river_items) {
+	// prefetch objects and subjects
+	$guids = array();
+	foreach ($river_items as $item) {
+		if ($item->subject_guid && !retrieve_cached_entity($item->subject_guid)) {
+			$guids[$item->subject_guid] = true;
+		}
+		if ($item->object_guid && !retrieve_cached_entity($item->object_guid)) {
+			$guids[$item->object_guid] = true;
+		}
+	}
+	if ($guids) {
+		// avoid creating oversized query
+		// @todo how to better handle this?
+		$guids = array_slice($guids, 0, 300, true);
+		// return value unneeded, just priming cache
+		elgg_get_entities(array(
+			'guids' => array_keys($guids),
+			'limit' => 0,
+		));
+	}
+
+	// prefetch object containers
+	$guids = array();
+	foreach ($river_items as $item) {
+		$object = $item->getObjectEntity();
+		if ($object->container_guid && !retrieve_cached_entity($object->container_guid)) {
+			$guids[$object->container_guid] = true;
+		}
+	}
+	if ($guids) {
+		$guids = array_slice($guids, 0, 300, true);
+		elgg_get_entities(array(
+			'guids' => array_keys($guids),
+			'limit' => 0,
+		));
+	}
+}
+
+/**
  * List river items
  *
  * @param array $options Any options from elgg_get_river() plus:
  * 	 pagination => BOOL Display pagination links (true)
-
+ *
  * @return string
  * @since 1.8.0
  */
@@ -542,7 +594,7 @@ function elgg_river_get_action_where_sql($types) {
 /**
  * Get the where clause based on river view strings
  *
- * @param array $types Array of view strings
+ * @param array $views Array of view strings
  *
  * @return string
  * @since 1.8.0
@@ -637,8 +689,10 @@ function elgg_river_init() {
 	elgg_register_page_handler('activity', 'elgg_river_page_handler');
 	$item = new ElggMenuItem('activity', elgg_echo('activity'), 'activity');
 	elgg_register_menu_item('site', $item);
-
+	
 	elgg_register_widget_type('river_widget', elgg_echo('river:widget:title'), elgg_echo('river:widget:description'));
+
+	elgg_register_action('river/delete', '', 'admin');
 
 	elgg_register_plugin_hook_handler('unit_test', 'system', 'elgg_river_test');
 }

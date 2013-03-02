@@ -95,8 +95,6 @@ $owner_guid = 0, $access_id = ACCESS_PRIVATE) {
 	$entity = get_entity($entity_guid);
 
 	if (elgg_trigger_event('annotate', $entity->type, $entity)) {
-		system_log($entity, 'annotate');
-
 		// If ok then add it
 		$result = insert_data("INSERT into {$CONFIG->dbprefix}annotations
 			(entity_guid, name_id, value_id, value_type, owner_guid, time_created, access_id) VALUES
@@ -163,13 +161,9 @@ function update_annotation($annotation_id, $name, $value, $value_type, $owner_gu
 		where id=$annotation_id and $access");
 
 	if ($result !== false) {
+		// @todo add plugin hook that sends old and new annotation information before db access
 		$obj = elgg_get_annotation_from_id($annotation_id);
-		if (elgg_trigger_event('update', 'annotation', $obj)) {
-			return true;
-		} else {
-			// @todo add plugin hook that sends old and new annotation information before db access
-			elgg_delete_annotation_by_id($annotation_id);
-		}
+		elgg_trigger_event('update', 'annotation', $obj);
 	}
 
 	return $result;
@@ -183,21 +177,23 @@ function update_annotation($annotation_id, $name, $value, $value_type, $owner_gu
  *
  * @param array $options Array in format:
  *
- * 	annotation_names => NULL|ARR Annotation names
+ * annotation_names              => NULL|ARR Annotation names
+ * annotation_values             => NULL|ARR Annotation values
+ * annotation_ids                => NULL|ARR annotation ids
+ * annotation_case_sensitive     => BOOL Overall Case sensitive
+ * annotation_owner_guids        => NULL|ARR guids for annotation owners
+ * annotation_created_time_lower => INT Lower limit for created time.
+ * annotation_created_time_upper => INT Upper limit for created time.
+ * annotation_calculation        => STR Perform the MySQL function on the annotation values returned.
+ *                                   Do not confuse this "annotation_calculation" option with the
+ *                                   "calculation" option to elgg_get_entities_from_annotation_calculation().
+ *                                   The "annotation_calculation" option causes this function to
+ *                                   return the result of performing a mathematical calculation on
+ *                                   all annotations that match the query instead of ElggAnnotation
+ *                                   objects.
+ *                                   See the docs for elgg_get_entities_from_annotation_calculation()
+ *                                   for the proper use of the "calculation" option.
  *
- * 	annotation_values => NULL|ARR Annotation values
- *
- * 	annotation_ids => NULL|ARR annotation ids
- *
- * 	annotation_case_sensitive => BOOL Overall Case sensitive
- *
- *  annotation_owner_guids => NULL|ARR guids for annotation owners
- *
- *  annotation_created_time_lower => INT Lower limit for created time.
- *
- *  annotation_created_time_upper => INT Upper limit for created time.
- *
- *  annotation_calculation => STR Perform the MySQL function on the annotation values returned.
  *
  * @return mixed
  * @since 1.8.0
@@ -211,9 +207,11 @@ function elgg_get_annotations(array $options = array()) {
  * Deletes annotations based on $options.
  *
  * @warning Unlike elgg_get_annotations() this will not accept an empty options array!
+ *          This requires at least one constraint: annotation_owner_guid(s),
+ *          annotation_name(s), annotation_value(s), or guid(s) must be set.
  *
  * @param array $options An options array. {@See elgg_get_annotations()}
- * @return mixed
+ * @return mixed Null if the metadata name is invalid. Bool on success or fail.
  * @since 1.8.0
  */
 function elgg_delete_annotations(array $options) {
@@ -222,7 +220,7 @@ function elgg_delete_annotations(array $options) {
 	}
 
 	$options['metastring_type'] = 'annotations';
-	return elgg_batch_metastring_based_objects($options, 'elgg_batch_delete_callback');
+	return elgg_batch_metastring_based_objects($options, 'elgg_batch_delete_callback', false);
 }
 
 /**
@@ -239,8 +237,8 @@ function elgg_disable_annotations(array $options) {
 		return false;
 	}
 
-	$options['metastrings_type'] = 'annotations';
-	return elgg_batch_metastring_based_objects($options, 'elgg_batch_disable_callback');
+	$options['metastring_type'] = 'annotations';
+	return elgg_batch_metastring_based_objects($options, 'elgg_batch_disable_callback', false);
 }
 
 /**
@@ -318,8 +316,6 @@ function elgg_list_annotations($options) {
  *
  *  annotation_owner_guids => NULL|ARR guids for annotaiton owners
  *
- *  annotation_ids => NULL|ARR Annotation IDs
- *
  * @return mixed If count, int. If not count, array. false on errors.
  * @since 1.7.0
  */
@@ -338,8 +334,6 @@ function elgg_get_entities_from_annotations(array $options = array()) {
 
 		'annotation_owner_guids'				=>	ELGG_ENTITIES_ANY_VALUE,
 
-		'annotation_ids'						=>	ELGG_ENTITIES_ANY_VALUE,
-
 		'order_by'								=>	'maxtime desc',
 		'group_by'								=>	'a.entity_guid'
 	);
@@ -347,12 +341,13 @@ function elgg_get_entities_from_annotations(array $options = array()) {
 	$options = array_merge($defaults, $options);
 
 	$singulars = array('annotation_name', 'annotation_value',
-	'annotation_name_value_pair', 'annotation_owner_guid', 'annotation_id');
+	'annotation_name_value_pair', 'annotation_owner_guid');
 
 	$options = elgg_normalise_plural_options_array($options, $singulars);
+	$options = elgg_entities_get_metastrings_options('annotation', $options);
 
-	if (!$options = elgg_entities_get_metastrings_options('annotation', $options)) {
-		return FALSE;
+	if (!$options) {
+		return false;
 	}
 
 	// special sorting for annotations
@@ -388,8 +383,14 @@ function elgg_list_entities_from_annotations($options = array()) {
  * Get entities ordered by a mathematical calculation on annotation values
  *
  * @param array $options An options array:
- * 	'annotation_calculation' => The calculation to use. Must be a valid MySQL function.
+ * 	'calculation'            => The calculation to use. Must be a valid MySQL function.
  *                              Defaults to sum.  Result selected as 'annotation_calculation'.
+ *                              Don't confuse this "calculation" option with the
+ *                              "annotation_calculation" option to elgg_get_annotations().
+ *                              This "calculation" option is applied to each entity's set of
+ *                              annotations and is selected as annotation_calculation for that row.
+ *                              See the docs for elgg_get_annotations() for proper use of the
+ *                              "annotation_calculation" option.
  *	'order_by'               => The order for the sorting. Defaults to 'annotation_calculation desc'.
  *	'annotation_names'       => The names of annotations on the entity.
  *	'annotation_values'	     => The values of annotations on the entity.
@@ -545,8 +546,8 @@ function elgg_comment_url_handler(ElggAnnotation $comment) {
 /**
  * Register an annotation url handler.
  *
- * @param string $function_name The function.
  * @param string $extender_name The name, default 'all'.
+ * @param string $function_name The function.
  *
  * @return string
  */

@@ -5,6 +5,9 @@
  *
  * @package    Elgg.Core
  * @subpackage Groups
+ * 
+ * @property string $name        A short name that captures the purpose of the group
+ * @property string $description A longer body of content that gives more details about the group
  */
 class ElggGroup extends ElggEntity
 	implements Friendable {
@@ -13,8 +16,6 @@ class ElggGroup extends ElggEntity
 	 * Sets the type to group.
 	 *
 	 * @return void
-	 *
-	 * @deprecated 1.8 Use initializeAttributes
 	 */
 	protected function initializeAttributes() {
 		parent::initializeAttributes();
@@ -26,12 +27,12 @@ class ElggGroup extends ElggEntity
 	}
 
 	/**
-	 * Construct a new user entity, optionally from a given id value.
+	 * Construct a new group entity, optionally from a given guid value.
 	 *
 	 * @param mixed $guid If an int, load that GUID.
-	 * 	If a db row then will attempt to load the rest of the data.
+	 * 	If an entity table db row, then will load the rest of the data.
 	 *
-	 * @throws Exception if there was a problem creating the user.
+	 * @throws Exception if there was a problem creating the group.
 	 */
 	function __construct($guid = null) {
 		$this->initializeAttributes();
@@ -40,15 +41,15 @@ class ElggGroup extends ElggEntity
 		$this->initialise_attributes(false);
 
 		if (!empty($guid)) {
-			// Is $guid is a DB row - either a entity row, or a user table row.
+			// Is $guid is a entity table DB row
 			if ($guid instanceof stdClass) {
 				// Load the rest
-				if (!$this->load($guid->guid)) {
+				if (!$this->load($guid)) {
 					$msg = elgg_echo('IOException:FailedToLoadGUID', array(get_class(), $guid->guid));
 					throw new IOException($msg);
 				}
 
-				// Is $guid is an ElggGroup? Use a copy constructor
+			// Is $guid is an ElggGroup? Use a copy constructor
 			} else if ($guid instanceof ElggGroup) {
 				elgg_deprecated_notice('This type of usage of the ElggGroup constructor was deprecated. Please use the clone method.', 1.7);
 
@@ -56,11 +57,11 @@ class ElggGroup extends ElggEntity
 					$this->attributes[$key] = $value;
 				}
 
-				// Is this is an ElggEntity but not an ElggGroup = ERROR!
+			// Is this is an ElggEntity but not an ElggGroup = ERROR!
 			} else if ($guid instanceof ElggEntity) {
 				throw new InvalidParameterException(elgg_echo('InvalidParameterException:NonElggGroup'));
 
-				// We assume if we have got this far, $guid is an int
+			// Is it a GUID
 			} else if (is_numeric($guid)) {
 				if (!$this->load($guid)) {
 					throw new IOException(elgg_echo('IOException:FailedToLoadGUID', array(get_class(), $guid)));
@@ -316,41 +317,25 @@ class ElggGroup extends ElggEntity
 	}
 
 	/**
-	 * Override the load function.
-	 * This function will ensure that all data is loaded (were possible), so
-	 * if only part of the ElggGroup is loaded, it'll load the rest.
+	 * Load the ElggGroup data from the database
 	 *
-	 * @param int $guid GUID of an ElggGroup entity
+	 * @param mixed $guid GUID of an ElggGroup entity or database row from entity table
 	 *
 	 * @return bool
 	 */
 	protected function load($guid) {
-		// Test to see if we have the generic stuff
-		if (!parent::load($guid)) {
+		$attr_loader = new ElggAttributeLoader(get_class(), 'group', $this->attributes);
+		$attr_loader->requires_access_control = !($this instanceof ElggPlugin);
+		$attr_loader->secondary_loader = 'get_group_entity_as_row';
+
+		$attrs = $attr_loader->getRequiredAttributes($guid);
+		if (!$attrs) {
 			return false;
 		}
 
-		// Check the type
-		if ($this->attributes['type'] != 'group') {
-			$msg = elgg_echo('InvalidClassException:NotValidElggStar', array($guid, get_class()));
-			throw new InvalidClassException($msg);
-		}
-
-		// Load missing data
-		$row = get_group_entity_as_row($guid);
-		if (($row) && (!$this->isFullyLoaded())) {
-			// If $row isn't a cached copy then increment the counter
-			$this->attributes['tables_loaded']++;
-		}
-
-		// Now put these into the attributes array as core values
-		$objarray = (array) $row;
-		foreach ($objarray as $key => $value) {
-			$this->attributes[$key] = $value;
-		}
-
-		// guid needs to be an int  http://trac.elgg.org/ticket/4111
-		$this->attributes['guid'] = (int)$this->attributes['guid'];
+		$this->attributes = $attrs;
+		$this->attributes['tables_loaded'] = 2;
+		cache_entity($this);
 
 		return true;
 	}

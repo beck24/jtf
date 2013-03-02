@@ -30,7 +30,6 @@ function pages_init() {
 	// Register some actions
 	$action_base = elgg_get_plugins_path() . 'pages/actions/pages';
 	elgg_register_action("pages/edit", "$action_base/edit.php");
-	elgg_register_action("pages/editwelcome", "$action_base/editwelcome.php");
 	elgg_register_action("pages/delete", "$action_base/delete.php");
 
 	// Extend the main css view
@@ -64,6 +63,7 @@ function pages_init() {
 		'title' => 'text',
 		'description' => 'longtext',
 		'tags' => 'tags',
+		'parent_guid' => 'parent',
 		'access_id' => 'access',
 		'write_access_id' => 'write_access',
 	));
@@ -106,10 +106,6 @@ function pages_page_handler($page) {
 
 	elgg_load_library('elgg:pages');
 	
-	// add the jquery treeview files for navigation
-	elgg_load_js('jquery-treeview');
-	elgg_load_css('jquery-treeview');
-
 	if (!isset($page[0])) {
 		$page[0] = 'all';
 	}
@@ -189,10 +185,12 @@ function pages_icon_url_override($hook, $type, $returnvalue, $params) {
 	if (elgg_instanceof($entity, 'object', 'page_top') ||
 		elgg_instanceof($entity, 'object', 'page')) {
 		switch ($params['size']) {
+			case 'topbar':
+			case 'tiny':
 			case 'small':
 				return 'mod/pages/images/pages.gif';
 				break;
-			case 'medium':
+			default:
 				return 'mod/pages/images/pages_lrg.gif';
 				break;
 		}
@@ -264,13 +262,18 @@ function page_notify_message($hook, $entity_type, $returnvalue, $params) {
 	$entity = $params['entity'];
 	$to_entity = $params['to_entity'];
 	$method = $params['method'];
-	if (($entity instanceof ElggEntity) && (($entity->getSubtype() == 'page_top') || ($entity->getSubtype() == 'page'))) {
+
+	if (elgg_instanceof($entity, 'object', 'page') || elgg_instanceof($entity, 'object', 'page_top')) {
 		$descr = $entity->description;
 		$title = $entity->title;
-		//@todo why?
-		$url = elgg_get_site_url() . "view/" . $entity->guid;
 		$owner = $entity->getOwnerEntity();
-		return $owner->name . ' ' . elgg_echo("pages:via") . ': ' . $title . "\n\n" . $descr . "\n\n" . $entity->getURL();
+		
+		return elgg_echo('pages:notification', array(
+			$owner->name,
+			$title,
+			$descr,
+			$entity->getURL()
+		));
 	}
 	return null;
 }

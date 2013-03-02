@@ -31,6 +31,7 @@ function get_object_entity_as_row($guid) {
  * @param string $description The object's description
  *
  * @return bool
+ * @access private
  */
 function create_object_entity($guid, $title, $description) {
 	global $CONFIG;
@@ -52,11 +53,8 @@ function create_object_entity($guid, $title, $description) {
 			if ($result != false) {
 				// Update succeeded, continue
 				$entity = get_entity($guid);
-				if (elgg_trigger_event('update', $entity->type, $entity)) {
-					return $guid;
-				} else {
-					$entity->delete();
-				}
+				elgg_trigger_event('update', $entity->type, $entity);
+				return $guid;
 			}
 		} else {
 			// Update failed, attempt an insert.

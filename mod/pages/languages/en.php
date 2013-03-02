@@ -27,7 +27,16 @@ $english = array(
 	'pages:revision' => "Revision",
 
 	'pages:navigation' => "Navigation",
-	'pages:via' => "via pages",
+	'pages:new' => "A new page",
+	'pages:notification' =>
+'%s added a new page:
+
+%s
+%s
+
+View and comment on the new page:
+%s
+',
 	'item:object:page_top' => 'Top-level pages',
 	'item:object:page' => 'Pages',
 	'pages:nogroup' => 'This group does not have any pages yet',
@@ -52,6 +61,7 @@ $english = array(
 	'pages:title' => 'Page title',
 	'pages:description' => 'Page text',
 	'pages:tags' => 'Tags',
+	'pages:parent_guid' => 'Parent page',
 	'pages:access_id' => 'Read access',
 	'pages:write_access_id' => 'Write access',
 

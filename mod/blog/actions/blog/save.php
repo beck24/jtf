@@ -57,7 +57,11 @@ $required = array('title', 'description');
 
 // load from POST and do sanity and access checking
 foreach ($values as $name => $default) {
-	$value = get_input($name, $default);
+	if ($name === 'title') {
+		$value = htmlspecialchars(get_input('title', $default, false), ENT_QUOTES, 'UTF-8');
+	} else {
+		$value = get_input($name, $default);
+	}
 
 	if (in_array($name, $required) && empty($value)) {
 		$error = elgg_echo("blog:error:missing:$name");
@@ -78,11 +82,8 @@ foreach ($values as $name => $default) {
 
 		case 'excerpt':
 			if ($value) {
-				$value = elgg_get_excerpt($value);
-			} else {
-				$value = elgg_get_excerpt($values['description']);
+				$values[$name] = elgg_get_excerpt($value);
 			}
-			$values[$name] = $value;
 			break;
 
 		case 'container_guid':
@@ -144,12 +145,11 @@ if (!$error) {
 		system_message(elgg_echo('blog:message:saved'));
 
 		$status = $blog->status;
-		$db_prefix = elgg_get_config('dbprefix');
 
 		// add to river if changing status or published, regardless of new post
 		// because we remove it for drafts.
 		if (($new_post || $old_status == 'draft') && $status == 'published') {
-			add_to_river('river/object/blog/create', 'create', elgg_get_logged_in_user_guid(), $blog->getGUID());
+			add_to_river('river/object/blog/create', 'create', $blog->owner_guid, $blog->getGUID());
 
 			if ($guid) {
 				$blog->time_created = time();

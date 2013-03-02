@@ -105,6 +105,7 @@ function import_extender_plugin_hook($hook, $entity_type, $returnvalue, $params)
 
 		// Save
 		if (!$entity->save()) {
+			$attr_name = $element->getAttribute('name');
 			$msg = elgg_echo('ImportException:ProblemUpdatingMeta', array($attr_name, $entity_uuid));
 			throw new ImportException($msg);
 		}
@@ -120,7 +121,7 @@ function import_extender_plugin_hook($hook, $entity_type, $returnvalue, $params)
  * @param string $type        'metadata' or 'annotation'
  * @param int    $user_guid   The GUID of the user
  *
- * @return true|false
+ * @return bool
  */
 function can_edit_extender($extender_id, $type, $user_guid = 0) {
 	if (!elgg_is_logged_in()) {
@@ -135,14 +136,15 @@ function can_edit_extender($extender_id, $type, $user_guid = 0) {
 
 	$functionname = "elgg_get_{$type}_from_id";
 	if (is_callable($functionname)) {
-		$extender = $functionname($extender_id);
+		$extender = call_user_func($functionname, $extender_id);
 	} else {
 		return false;
 	}
 
-	if (!is_a($extender, "ElggExtender")) {
+	if (!($extender instanceof ElggExtender)) {
 		return false;
 	}
+	/* @var ElggExtender $extender */
 
 	// If the owner is the specified user, great! They can edit.
 	if ($extender->getOwnerGUID() == $user->getGUID()) {
@@ -155,7 +157,7 @@ function can_edit_extender($extender_id, $type, $user_guid = 0) {
 	}
 
 	// Trigger plugin hooks
-	$params = array('entity' => $entity, 'user' => $user);
+	$params = array('entity' => $extender->getEntity(), 'user' => $user);
 	return elgg_trigger_plugin_hook('permissions_check', $type, $params, false);
 }
 
@@ -164,9 +166,9 @@ function can_edit_extender($extender_id, $type, $user_guid = 0) {
  * It is recommended that you do not call this directly, instead use
  * one of the wrapper functions such as elgg_register_annotation_url_handler().
  *
- * @param string $function_name The function to register
  * @param string $extender_type Extender type ('annotation', 'metadata')
  * @param string $extender_name The name of the extender
+ * @param string $function_name The function to register
  *
  * @return bool
  */
@@ -174,7 +176,7 @@ function elgg_register_extender_url_handler($extender_type, $extender_name, $fun
 
 	global $CONFIG;
 
-	if (!is_callable($function_name)) {
+	if (!is_callable($function_name, true)) {
 		return false;
 	}
 
@@ -227,7 +229,7 @@ function get_extender_url(ElggExtender $extender) {
 	if ($url == "") {
 		$nameid = $extender->id;
 		if ($type == 'volatile') {
-			$nameid == $extender->name;
+			$nameid = $extender->name;
 		}
 		$url = "export/$view/$guid/$type/$nameid/";
 	}

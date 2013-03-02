@@ -86,7 +86,12 @@ function bookmarks_init() {
  * @return bool
  */
 function bookmarks_page_handler($page) {
+
 	elgg_load_library('elgg:bookmarks');
+
+	if (!isset($page[0])) {
+		$page[0] = 'all';
+	}
 
 	elgg_push_breadcrumb(elgg_echo('bookmarks'), 'bookmarks/all');
 
@@ -120,10 +125,13 @@ function bookmarks_page_handler($page) {
 			include "$pages/friends.php";
 			break;
 
-		case "read":
 		case "view":
 			set_input('guid', $page[1]);
 			include "$pages/view.php";
+			break;
+		case 'read': // Elgg 1.7 compatibility
+			register_error(elgg_echo("changebookmark"));
+			forward("bookmarks/view/{$page[1]}");
 			break;
 
 		case "add":
@@ -245,21 +253,15 @@ function bookmarks_notify_message($hook, $entity_type, $returnvalue, $params) {
 	if (($entity instanceof ElggEntity) && ($entity->getSubtype() == 'bookmarks')) {
 		$descr = $entity->description;
 		$title = $entity->title;
-		global $CONFIG;
-		$url = elgg_get_site_url() . "view/" . $entity->guid;
-		if ($method == 'sms') {
-			$owner = $entity->getOwnerEntity();
-			return $owner->name . ' ' . elgg_echo("bookmarks:via") . ': ' . $url . ' (' . $title . ')';
-		}
-		if ($method == 'email') {
-			$owner = $entity->getOwnerEntity();
-			return $owner->name . ' ' . elgg_echo("bookmarks:via") . ': ' . $title . "\n\n" . $descr . "\n\n" . $entity->getURL();
-		}
-		if ($method == 'web') {
-			$owner = $entity->getOwnerEntity();
-			return $owner->name . ' ' . elgg_echo("bookmarks:via") . ': ' . $title . "\n\n" . $descr . "\n\n" . $entity->getURL();
-		}
+		$owner = $entity->getOwnerEntity();
 
+		return elgg_echo('bookmarks:notification', array(
+			$owner->name,
+			$title,
+			$entity->address,
+			$descr,
+			$entity->getURL()
+		));
 	}
 	return null;
 }

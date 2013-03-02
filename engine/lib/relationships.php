@@ -239,6 +239,15 @@ function get_entity_relationships($guid, $inverse_relationship = FALSE) {
  * Also accepts all options available to elgg_get_entities() and
  * elgg_get_entities_from_metadata().
  *
+ * To ask for entities that do not have a particulat relationship to an entity,
+ * use a custom where clause like the following:
+ *
+ * 	$options['wheres'][] = "NOT EXISTS (
+ *			SELECT 1 FROM {$db_prefix}entity_relationships
+ *				WHERE guid_one = e.guid
+ *				AND relationship = '$relationship'
+ *		)";
+ *
  * @see elgg_get_entities
  * @see elgg_get_entities_from_metadata
  *
@@ -290,7 +299,7 @@ function elgg_get_entities_from_relationship($options) {
 			$options['selects'] = array();
 		}
 
-		$select = array('r.*');
+		$select = array('r.id');
 
 		$options['selects'] = array_merge($options['selects'], $select);
 	}
@@ -399,15 +408,15 @@ function elgg_list_entities_from_relationship_count($options) {
 /**
  * Sets the URL handler for a particular relationship type
  *
- * @param string $function_name     The function to register
  * @param string $relationship_type The relationship type.
+ * @param string $function_name     The function to register
  *
  * @return bool Depending on success
  */
 function elgg_register_relationship_url_handler($relationship_type, $function_name) {
 	global $CONFIG;
 
-	if (!is_callable($function_name)) {
+	if (!is_callable($function_name, true)) {
 		return false;
 	}
 

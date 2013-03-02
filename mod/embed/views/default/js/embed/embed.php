@@ -67,6 +67,8 @@ echo elgg_view('embed/custom_insert_js');
  * @return bool
  */
 elgg.embed.submit = function(event) {
+	$('.embed-wrapper .elgg-form-file-upload').hide();
+	$('.embed-throbber').show();
 	
 	$(this).ajaxSubmit({
 		dataType : 'json',
@@ -82,11 +84,15 @@ elgg.embed.submit = function(event) {
 					var url = elgg.normalize_url('embed/tab/' + forward);
 					url = elgg.embed.addContainerGUID(url);
 					$('.embed-wrapper').parent().load(url);
+				} else {
+					// incorrect response, presumably an error has been displayed
+					$('.embed-throbber').hide();
+					$('.embed-wrapper .elgg-form-file-upload').show();
 				}
 			}
 		},
-		error: function(xhr, status) {
-			// nothing for now
+		error    : function(xhr, status) {
+			// @todo nothing for now
 		}
 	});
 

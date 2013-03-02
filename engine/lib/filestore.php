@@ -18,7 +18,7 @@
  */
 function get_dir_size($dir, $totalsize = 0) {
 	$handle = @opendir($dir);
-	while ($file = @readdir ($handle)) {
+	while ($file = @readdir($handle)) {
 		if (eregi("^\.{1,2}$", $file)) {
 			continue;
 		}
@@ -148,6 +148,12 @@ $x1 = 0, $y1 = 0, $x2 = 0, $y2 = 0, $upscale = FALSE) {
 	if (!$new_image) {
 		return FALSE;
 	}
+
+	// color transparencies white (default is black)
+	imagefilledrectangle(
+		$new_image, 0, 0, $params['newwidth'], $params['newheight'],
+		imagecolorallocate($new_image, 255, 255, 255)
+	);
 
 	$rtn_code = imagecopyresampled(	$new_image,
 									$original_image,

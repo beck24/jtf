@@ -188,8 +188,8 @@ function elgg_get_sticky_value($form_name, $variable = '', $default = NULL, $fil
 /**
  * Get all the values in a sticky form in an array
  *
- * @param string $form_name    The name of the form
- * @param bool $filter_result  Filter for bad input if true
+ * @param string $form_name     The name of the form
+ * @param bool   $filter_result Filter for bad input if true
  *
  * @return array
  * @since 1.8.0
@@ -283,7 +283,7 @@ function input_livesearch_page_handler($page) {
 					WHERE e.guid = ue.guid
 						AND e.enabled = 'yes'
 						AND ue.banned = 'no'
-						AND (ue.name LIKE '$q%' OR ue.username LIKE '$q%')
+						AND (ue.name LIKE '$q%' OR ue.name LIKE '% $q%' OR ue.username LIKE '$q%')
 					LIMIT $limit
 				";
 
@@ -333,7 +333,7 @@ function input_livesearch_page_handler($page) {
 					WHERE e.guid = ge.guid
 						AND e.enabled = 'yes'
 						$owner_where
-						AND (ge.name LIKE '$q%' OR ge.description LIKE '%$q%')
+						AND (ge.name LIKE '$q%' OR ge.name LIKE '% $q%' OR ge.description LIKE '% $q%')
 					LIMIT $limit
 				";
 				if ($entities = get_data($query)) {
@@ -379,7 +379,7 @@ function input_livesearch_page_handler($page) {
 						AND e.guid = ue.guid
 						AND e.enabled = 'yes'
 						AND ue.banned = 'no'
-						AND (ue.name LIKE '$q%' OR ue.username LIKE '$q%')
+						AND (ue.name LIKE '$q%' OR ue.name LIKE '% $q%' OR ue.username LIKE '$q%')
 					LIMIT $limit
 				";
 

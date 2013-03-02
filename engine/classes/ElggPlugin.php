@@ -36,8 +36,9 @@ class ElggPlugin extends ElggObject {
 	 * @warning Unlike other ElggEntity objects, you cannot null instantiate
 	 *          ElggPlugin. You must point it to an actual plugin GUID or location.
 	 *
-	 * @param mixed $plugin The GUID of the ElggPlugin object or the path of
-	 *                      the plugin to load.
+	 * @param mixed $plugin The GUID of the ElggPlugin object or the path of the plugin to load.
+	 *
+	 * @throws PluginException
 	 */
 	public function __construct($plugin) {
 		if (!$plugin) {
@@ -76,6 +77,8 @@ class ElggPlugin extends ElggObject {
 			// load the rest of the plugin
 			parent::__construct($existing_guid);
 		}
+
+		_elgg_cache_plugin_by_id($this);
 	}
 
 	/**
@@ -300,10 +303,7 @@ class ElggPlugin extends ElggObject {
 			$return = array();
 
 			foreach ($private_settings as $setting) {
-				$name = substr($setting->name, $ps_prefix_len);
-				$value = $setting->value;
-
-				$return[$name] = $value;
+				$return[$setting->name] = $setting->value;
 			}
 
 			return $return;
@@ -707,9 +707,9 @@ class ElggPlugin extends ElggObject {
 	 * @throws PluginException
 	 */
 	public function start($flags) {
-//		if (!$this->canActivate()) {
-//			return false;
-//		}
+		//if (!$this->canActivate()) {
+		//	return false;
+		//}
 
 		// include classes
 		if ($flags & ELGG_PLUGIN_REGISTER_CLASSES) {

@@ -609,8 +609,7 @@ function elgg_get_metastring_sql($table, $names = null, $values = null,
 }
 
 /**
- * Normalizes metadata / annotation option names to their
- * corresponding metastrings name.
+ * Normalizes metadata / annotation option names to their corresponding metastrings name.
  *
  * @param array $options An options array
  * @since 1.8.0
@@ -631,10 +630,10 @@ function elgg_normalize_metastrings_options(array $options = array()) {
 
 	// map the metadata_* options to metastring_* options
 	$map = array(
-		'names' 				=>	'metastring_names',
-		'values' 				=>	'metastring_values',
-		'case_sensitive' 		=>	'metastring_case_sensitive',
-		'owner_guids' 			=>	'metastring_owner_guids',
+		'names'					=>	'metastring_names',
+		'values'				=>	'metastring_values',
+		'case_sensitive'		=>	'metastring_case_sensitive',
+		'owner_guids'			=>	'metastring_owner_guids',
 		'created_time_lower'	=>	'metastring_created_time_lower',
 		'created_time_upper'	=>	'metastring_created_time_upper',
 		'calculation'			=>	'metastring_calculation',
@@ -717,21 +716,23 @@ function elgg_set_metastring_based_object_enabled_by_id($id, $enabled, $type) {
  * @warning Unlike elgg_get_metastring_based_objects() this will not accept an
  * empty options array!
  *
- * @param array  $options  An options array. {@See elgg_get_metastring_based_objects()}
- * @param string $callback The callback to pass each result through
- * @return mixed
+ * @warning This returns null on no ops.
+ *
+ * @param array  $options    An options array. {@See elgg_get_metastring_based_objects()}
+ * @param string $callback   The callback to pass each result through
+ * @param bool   $inc_offset Increment the offset? Pass false for callbacks that delete / disable
+ *
+ * @return bool|null true on success, false on failure, null if no objects are found.
  * @since 1.8.0
  * @access private
  */
-function elgg_batch_metastring_based_objects(array $options, $callback) {
+function elgg_batch_metastring_based_objects(array $options, $callback, $inc_offset = true) {
 	if (!$options || !is_array($options)) {
 		return false;
 	}
 
-	$batch = new ElggBatch('elgg_get_metastring_based_objects', $options, $callback);
-	$r = $batch->callbackResult;
-
-	return $r;
+	$batch = new ElggBatch('elgg_get_metastring_based_objects', $options, $callback, 50, $inc_offset);
+	return $batch->callbackResult;
 }
 
 /**

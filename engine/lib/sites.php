@@ -18,11 +18,19 @@
 function elgg_get_site_entity($site_guid = 0) {
 	global $CONFIG;
 
+	$result = false;
+	
 	if ($site_guid == 0) {
-		return $CONFIG->site;
+		$site = $CONFIG->site;
+	} else {
+		$site = get_entity($site_guid);
+	}
+	
+	if($site instanceof ElggSite){
+		$result = $site;
 	}
 
-	return get_entity($site_guid);
+	return $result;
 }
 
 /**
@@ -50,6 +58,7 @@ function get_site_entity_as_row($guid) {
  * @param string $url         URL of the site
  *
  * @return bool
+ * @access private
  */
 function create_site_entity($guid, $name, $description, $url) {
 	global $CONFIG;
@@ -231,43 +240,6 @@ function get_site_domain($guid) {
 }
 
 /**
- * Initialise site handling
- *
- * Called at the beginning of system running, to set the ID of the current site.
- * This is 0 by default, but plugins may alter this behaviour by attaching functions
- * to the sites init event and changing $CONFIG->site_id.
- *
- * @uses $CONFIG
- *
- * @param string $event       Event API required parameter
- * @param string $object_type Event API required parameter
- * @param null   $object      Event API required parameter
- *
- * @return true
- * @access private
- */
-function sites_boot($event, $object_type, $object) {
-	global $CONFIG;
-
-	$site = elgg_trigger_plugin_hook("siteid", "system");
-	if ($site === null || $site === false) {
-		$CONFIG->site_id = (int) datalist_get('default_site');
-	} else {
-		$CONFIG->site_id = $site;
-	}
-	$CONFIG->site_guid = $CONFIG->site_id;
-	$CONFIG->site = get_entity($CONFIG->site_guid);
-
-	return true;
-}
-
-// Register event handlers
-elgg_register_event_handler('boot', 'system', 'sites_boot', 2);
-
-// Register with unit test
-elgg_register_plugin_hook_handler('unit_test', 'system', 'sites_test');
-
-/**
  * Unit tests for sites
  *
  * @param sting  $hook   unit_test
@@ -283,3 +255,6 @@ function sites_test($hook, $type, $value, $params) {
 	$value[] = "{$CONFIG->path}engine/tests/objects/sites.php";
 	return $value;
 }
+
+// Register with unit test
+elgg_register_plugin_hook_handler('unit_test', 'system', 'sites_test');

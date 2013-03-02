@@ -4,8 +4,7 @@
  *
  * @package    Elgg.Core
  * @subpackage Navigation
- *
- * @since 1.8.0
+ * @since      1.8.0
  */
 class ElggMenuBuilder {
 
@@ -16,16 +15,16 @@ class ElggMenuBuilder {
 	/**
 	 * ElggMenuBuilder constructor
 	 *
-	 * @param string $name  Identifier of the menu
+	 * @param array $menu Array of ElggMenuItem objects
 	 */
-	public function __construct($menu) {
+	public function __construct(array $menu) {
 		$this->menu = $menu;
 	}
 
 	/**
 	 * Get a prepared menu array
 	 *
-	 * @param mixed $sort_by
+	 * @param mixed $sort_by Method to sort the menu by. @see ElggMenuBuilder::sort()
 	 * @return array
 	 */
 	public function getMenu($sort_by = 'text') {
@@ -80,6 +79,7 @@ class ElggMenuBuilder {
 
 	/**
 	 * Group the menu items into sections
+	 * 
 	 * @return void
 	 */
 	protected function setupSections() {
@@ -204,6 +204,9 @@ class ElggMenuBuilder {
 
 		// sort each section
 		foreach ($this->menu as $index => $section) {
+			foreach ($section as $key => $node) {
+				$section[$key]->setData('original_order', $key);
+			}
 			usort($section, $sort_callback);
 			$this->menu[$index] = $section;
 
@@ -232,10 +235,14 @@ class ElggMenuBuilder {
 	 * @return bool
 	 */
 	public static function compareByText($a, $b) {
-		$a = $a->getText();
-		$b = $b->getText();
+		$at = $a->getText();
+		$bt = $b->getText();
 
-		return strnatcmp($a, $b);
+		$result = strnatcmp($at, $bt);
+		if ($result === 0) {
+			return $a->getData('original_order') - $b->getData('original_order');
+		}
+		return $result;
 	}
 
 	/**
@@ -246,10 +253,14 @@ class ElggMenuBuilder {
 	 * @return bool
 	 */
 	public static function compareByName($a, $b) {
-		$a = $a->getName();
-		$b = $b->getName();
+		$an = $a->getName();
+		$bn = $b->getName();
 
-		return strcmp($a, $b);
+		$result = strcmp($an, $bn);
+		if ($result === 0) {
+			return $a->getData('original_order') - $b->getData('original_order');
+		}
+		return $result;
 	}
 
 	/**
@@ -260,9 +271,12 @@ class ElggMenuBuilder {
 	 * @return bool
 	 */
 	public static function compareByWeight($a, $b) {
-		$a = $a->getWeight();
-		$b = $b->getWeight();
+		$aw = $a->getWeight();
+		$bw = $b->getWeight();
 
-		return $a > $b;
+		if ($aw == $bw) {
+			return $a->getData('original_order') - $b->getData('original_order');
+		}
+		return $aw - $bw;
 	}
 }

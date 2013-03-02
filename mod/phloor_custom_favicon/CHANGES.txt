@@ -1,0 +1,22 @@
+/**
+ * Change Log
+ */
+ 
+ /**
+ * @version 1.8-11.11.21
+ */
+- security and code clean up
+- added gpl header 
+
+/**
+ * @version 1.8-11.11.17
+ */
+- Initial release
+
+
+
+
+
+
+
+

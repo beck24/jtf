@@ -1,0 +1,21 @@
+CHANGELOG
+
+11/27/2011
+v1.0
+Initial Release
+
+v1.1
+Fixed an issue that prevented new users from registering.
+
+12/01/2011
+v1.2
+Added "Unsuspend" admin ability
+
+12/04/2011
+v1.3
+Added consequences for each content type
+Added time limit for reported content
+Fixed incorrect comment count
+
+01/21/12
+Upgraded some deprecated functions for 1.8.3

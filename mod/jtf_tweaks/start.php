@@ -1,11 +1,6 @@
 <?php
 
-function jtf_tweaks_init(){
-	global $CONFIG;
-	
-	// Load the language file
-	register_translations($CONFIG->pluginspath . "jtf_tweaks/languages/");
-	
+function jtf_tweaks_init(){	
 	// extend css
 	elgg_extend_view('css/elgg', 'jtf_tweaks/css', 9000);
     elgg_register_plugin_hook_handler('index', 'system', 'jtf_tweaks_custom_index');

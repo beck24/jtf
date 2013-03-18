@@ -62,8 +62,8 @@
 /* weight tracker */
 .jtf_tweaks_site_total_weight {
 	display: inline-block;
-	margin-left: 140px;
-	margin-top: -40px;
+	margin-top: 15px;
+	margin-right: 400px;
 	border-radius: 5px;
 	border: 1px solid black;
 	background-color: #3E4859;
@@ -83,6 +83,15 @@
 	vertical-align: middle;
 	padding: 2px 5px;
 }	
+
+.jtf-header-contents {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.jtf-header-logo {
+  float: left;
+}
 
 .jtf_tweaks_current_weight, .jtf_tweaks_start_weight {
 	padding: 2px 5px;

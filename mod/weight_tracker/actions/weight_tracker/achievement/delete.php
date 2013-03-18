@@ -3,7 +3,7 @@ action_gatekeeper();
 
 $delete = get_input('achievement');
 
-$guid = get_input('user');
+$guid = get_input('owner');
 $user = get_user($guid);
 
 if (!$user->canEdit()) {

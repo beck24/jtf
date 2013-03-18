@@ -10,7 +10,7 @@
 		global $CONFIG;
 		
 		// Register page handler for captcha functionality
-		register_page_handler('captcha','captcha_page_handler');
+		elgg_register_page_handler('captcha','captcha_page_handler');
 		
 		// Extend CSS
 		elgg_extend_view('css','captcha/css');
@@ -22,16 +22,16 @@
 		$CONFIG->captcha_length = 5;
 		
 		// Register a function that provides some default override actions
-		register_plugin_hook('actionlist', 'captcha', 'captcha_actionlist_hook');
+		elgg_register_plugin_hook_handler('actionlist', 'captcha', 'captcha_actionlist_hook');
 		
 		// Register actions to intercept
 		$actions = array();
-		$actions = trigger_plugin_hook('actionlist', 'captcha', null, $actions);
+		$actions = elgg_trigger_plugin_hook('actionlist', 'captcha', null, $actions);
 		
 		if (($actions) && (is_array($actions)))
 		{
 			foreach ($actions as $action)
-				register_plugin_hook("action", $action, "captcha_verify_action_hook");
+				elgg_register_plugin_hook_handler("action", $action, "captcha_verify_action_hook");
 		}
 	}
 	
@@ -137,5 +137,4 @@
 		return $returnvalue;
 	}
 	
-	register_elgg_event_handler('init','system','captcha_init');
-?>
+	elgg_register_event_handler('init','system','captcha_init');

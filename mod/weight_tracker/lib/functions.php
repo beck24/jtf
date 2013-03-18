@@ -340,6 +340,10 @@ function weight_tracker_check_ie_pre9(){
 function weight_tracker_hover_menu($hook, $type, $return, $params) {
 	$user = $params['entity'];
 	
+	if (!elgg_instanceof($user, 'user')) {
+	  return $return;
+	}
+	
 	if(weight_tracker_graph_access($user)){
 	
 	  $url = elgg_get_site_url() . "weight_tracker/graph/{$user->username}";

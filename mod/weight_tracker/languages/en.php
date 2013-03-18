@@ -25,6 +25,7 @@ $english = array(
 'weight_tracker:widget:description' => "A display of earned achievements for your weight tracker",
 'weight_tracker:widget:title' => "Weight Tracker Achievements",
 'river:comment:object:weight_tracker' => "%s has posted a comment on this %s",
+'weight_tracker:invalid:permissions' => "You don't have permission to do that",
 
 // Exercise Tracker
 'exercise_tracker' => "Exercise Tracker",

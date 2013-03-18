@@ -121,7 +121,7 @@ function weight_tracker_achievements_check($user, $type = 'weight'){
     }
     
     // 10 extreme workouts
-    if(!in_array('10_extreme_workouts')){
+    if(!in_array('10_extreme_workouts', $achievements)){
       $check = 0;
       foreach($rawdata as $point){
         if($point->exercise_tracker_extreme_duration > 0){

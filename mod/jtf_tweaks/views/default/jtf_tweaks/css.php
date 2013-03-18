@@ -108,3 +108,10 @@
 	width: 220px;
 	height: auto;
 }
+
+
+/* jqplot overrides */
+
+.jqplot-title, .jqplot-axis {
+  color: white;
+}

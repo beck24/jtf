@@ -248,13 +248,7 @@ function weight_tracker_get_datapoints($rawdata, $type = 'graph'){
       for($i=0; $i<3; $i++){
         $prefix = "";
         foreach($xy as $date => $array){
-          // offset by 12 hours to make the ticks line up with the bars
-          $date = $date - 60*60*12;
-          $line['series'] .= $prefix . "['" . date("j-M-Y H:i", ($date - 60*60*6)) . "', 0]";
-          $prefix = ",";
-          $line['series'] .= $prefix . "['" . date("j-M-Y H:i", ($date - 60*60*5)) . "', {$array[$i]}]";
-          $line['series'] .= $prefix . "['" . date("j-M-Y H:i", ($date + 60*60*5)) . "', {$array[$i]}]";
-          $line['series'] .= $prefix . "['" . date("j-M-Y H:i", ($date + 60*60*6)) . "', 0]";
+          $line['series'] .= $prefix . "['" . date("j-M-Y H:i", ($date)) . "', {$array[$i]}],";
         }
         
         if($i != 2){

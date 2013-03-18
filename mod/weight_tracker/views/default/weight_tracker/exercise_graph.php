@@ -28,7 +28,7 @@ elgg_load_js('weight_tracker/jqplot/categoryAxis');
 elgg_load_js('weight_tracker/jqplot/pointLabels');
 elgg_load_js('weight_tracker/jqplot/canvasAxisLabel');
 elgg_load_js('weight_tracker/jqplot/canvasText');
-
+var_dump($vars['datapoints']);
 $emptymessage = "No Data Available";
 if(strlen($vars['datapoints']['series']) > 12){
   $emptymessage = "";
@@ -43,10 +43,11 @@ $(document).ready(function(){
 		    stackSeries: true,
 		    captureRightClick: true,
 		    seriesDefaults:{
-		      fill: true,
+			  renderer:$.jqplot.BarRenderer,
+/*		      fill: true,
 		      pointLabels: {
 			      show: false
-			  },
+			  }, */
 		    },
 		    axes: {
 	            xaxis: {
